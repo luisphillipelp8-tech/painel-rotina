@@ -1,0 +1,666 @@
+index.html <!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Painel — Rotina de Estudos (Visão geral)</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#121a33;
+      --muted:#93a4c7;
+      --text:#e9eeff;
+      --accent:#7c5cff;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --border: rgba(255,255,255,.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 20% 0%, rgba(124,92,255,.20), transparent 50%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(34,197,94,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding: 22px 18px 14px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .titleRow{
+      display:flex; gap:12px; align-items:flex-end; justify-content:space-between; flex-wrap:wrap;
+    }
+    h1{font-size:20px; margin:0; letter-spacing:.2px}
+    .sub{color:var(--muted); font-size:13px; margin-top:6px; line-height:1.35}
+    .pillRow{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+    .pill{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex; gap:8px; align-items:center;
+    }
+    .pill b{color:var(--text); font-weight:600}
+    main{
+      max-width:1100px;
+      margin: 0 auto;
+      padding: 0 18px 26px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      main{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    }
+    .card h2{margin:0 0 10px; font-size:14px; color: #dfe7ff}
+    .row{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .btnRow{display:flex; gap:8px; flex-wrap:wrap}
+    button{
+      appearance:none;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding:9px 10px;
+      border-radius:10px;
+      font-size:13px;
+      cursor:pointer;
+    }
+    button:hover{background: rgba(255,255,255,.08)}
+    button.primary{border-color: rgba(124,92,255,.6); background: rgba(124,92,255,.14)}
+    button.danger{border-color: rgba(239,68,68,.45); background: rgba(239,68,68,.10)}
+    .muted{color:var(--muted); font-size:12px}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width: 520px){.grid2{grid-template-columns:1fr}}
+    .kpi{
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.12);
+      border-radius:12px;
+      padding:12px;
+      min-height:84px;
+    }
+    .kpi .label{font-size:12px; color:var(--muted)}
+    .kpi .value{font-size:22px; font-weight:700; margin-top:6px}
+    .kpi .hint{font-size:12px; color:var(--muted); margin-top:4px}
+    .bar{
+      height:10px; border-radius:999px; background: rgba(255,255,255,.08);
+      overflow:hidden; border:1px solid rgba(255,255,255,.06);
+      margin-top:10px;
+    }
+    .bar > div{height:100%; background: linear-gradient(90deg, var(--accent), rgba(124,92,255,.35)); width:0%}
+    .list{display:flex; flex-direction:column; gap:8px; margin-top:10px}
+    .item{
+      display:flex; gap:10px; justify-content:space-between; align-items:flex-start;
+      padding:10px; border-radius:12px;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.10);
+    }
+    .item .left{display:flex; gap:10px; align-items:flex-start}
+    .dot{width:10px; height:10px; border-radius:999px; margin-top:4px; background: rgba(255,255,255,.25)}
+    .dot.ok{background: rgba(34,197,94,.9)}
+    .dot.warn{background: rgba(245,158,11,.95)}
+    .dot.bad{background: rgba(239,68,68,.95)}
+    .item h3{margin:0; font-size:13px}
+    .item p{margin:3px 0 0; font-size:12px; color:var(--muted); line-height:1.35}
+    .item .right{display:flex; gap:8px; align-items:center}
+    .check{
+      width:20px; height:20px;
+      border-radius:6px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      display:grid; place-items:center;
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+    .check[data-done="true"]{border-color: rgba(34,197,94,.55); background: rgba(34,197,94,.12)}
+    .check svg{opacity:.0}
+    .check[data-done="true"] svg{opacity:1}
+    .sectionDivider{margin-top:12px; border-top:1px dashed rgba(255,255,255,.12); padding-top:12px}
+    input[type="time"]{
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.12);
+      color: var(--text);
+      padding:8px 10px;
+      border-radius:10px;
+      font-size:13px;
+    }
+    .toast{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 18px;
+      background: rgba(18,26,51,.96);
+      border:1px solid var(--border);
+      padding:10px 12px;
+      border-radius: 12px;
+      font-size:13px;
+      color: var(--text);
+      max-width: min(560px, calc(100% - 24px));
+      display:none;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="titleRow">
+    <div>
+      <h1>Painel — Rotina de Estudos (visão geral)</h1>
+      <div class="sub">
+        Seg/Ter/Qui: 20h05–20h45 • Qua: compromisso • Sex: descanso • Sáb manhã: bloco principal • Dom: planejamento
+      </div>
+    </div>
+    <div class="btnRow">
+      <button id="btnToday" class="primary">Marcar hoje</button>
+      <button id="btnResetWeek">Zerar semana</button>
+      <button id="btnExport">Exportar</button>
+      <button id="btnImport">Importar</button>
+    </div>
+  </div>
+
+  <div class="pillRow" id="pillRow"></div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="row">
+      <h2>Progresso da semana</h2>
+      <div class="muted" id="weekLabel"></div>
+    </div>
+
+    <div class="grid2" style="margin-top:10px">
+      <div class="kpi">
+        <div class="label">Sessões concluídas</div>
+        <div class="value"><span id="doneCount">0</span>/<span id="totalCount">0</span></div>
+        <div class="bar"><div id="progressBar"></div></div>
+        <div class="hint" id="progressHint"></div>
+      </div>
+
+      <div class="kpi">
+        <div class="label">Alvo de sono (dias úteis)</div>
+        <div class="value"><span id="sleepTarget">23:30</span></div>
+        <div class="hint">Sugestão: começar a desacelerar às <b>22:45</b></div>
+        <div class="sectionDivider">
+          <div class="muted">Personalizar horário-alvo</div>
+          <div style="display:flex; gap:10px; align-items:center; margin-top:8px; flex-wrap:wrap">
+            <label class="muted">Dormir</label>
+            <input type="time" id="sleepInput" value="23:30"/>
+            <button id="saveSleep">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sectionDivider">
+      <div class="row">
+        <h2 style="margin:0">Agenda (checklist rápido)</h2>
+        <div class="muted">Clique no ✓ para marcar</div>
+      </div>
+
+      <div class="list" id="scheduleList"></div>
+    </div>
+  </section>
+
+  <aside class="card">
+    <h2>Ritual (5 min para começar)</h2>
+    <div class="muted">Timer rápido + checklist. (Não precisa motivação, só começar.)</div>
+
+    <div class="sectionDivider">
+      <div class="row">
+        <div style="font-weight:700">Timer</div>
+        <div class="muted"><span id="timerLabel">05:00</span></div>
+      </div>
+      <div class="btnRow" style="margin-top:10px">
+        <button id="timerStart" class="primary">Iniciar</button>
+        <button id="timerPause">Pausar</button>
+        <button id="timerReset">Reset</button>
+      </div>
+    </div>
+
+    <div class="sectionDivider">
+      <div style="font-weight:700; margin-bottom:8px">Checklist</div>
+      <div class="list" id="ritualList"></div>
+    </div>
+
+    <div class="sectionDivider">
+      <h2 style="margin:0 0 8px">Regras rápidas</h2>
+      <div class="item">
+        <div class="left">
+          <div class="dot ok"></div>
+          <div>
+            <h3>Almoço = recuperar</h3>
+            <p>Almoçar + cochilo + energia. Não é horário de estudo.</p>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="left">
+          <div class="dot warn"></div>
+          <div>
+            <h3>Quarta e sexta: respeitar</h3>
+            <p>Quarta já está ocupada; sexta é descanso sem culpa.</p>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="left">
+          <div class="dot bad"></div>
+          <div>
+            <h3>Não sacrificar o sono</h3>
+            <p>Evitar madrugada para estudar (custo alto no dia seguinte).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // -------------------------
+  // Dados-base (ajuste se quiser)
+  // -------------------------
+  const ROUTINE = {
+    title: "Rotina de Estudos — visão geral",
+    weeklySessions: [
+      { key:"mon", label:"Segunda", emoji:"🟢", time:"20:05–20:45", focus:"Conteúdo novo / aula prioritária", objective:"Começar a semana avançando" },
+      { key:"tue", label:"Terça", emoji:"🟢", time:"20:05–20:45", focus:"Continuar + atividade/aula", objective:"Manter o ritmo" },
+      { key:"wed", label:"Quarta", emoji:"🔵", time:"19:00–23:00", focus:"Compromisso (sem estudo)", objective:"Respeitar o espaço ocupado", type:"blocked" },
+      { key:"thu", label:"Quinta", emoji:"🟢", time:"20:05–20:45", focus:"Atividades / revisão / pendências", objective:"Fechar o ciclo principal", },
+      { key:"fri", label:"Sexta", emoji:"🟣", time:"—", focus:"Descanso", objective:"Recuperar energia", type:"rest" },
+      { key:"sat", label:"Sábado (manhã)", emoji:"☀️", time:"1h30–2h", focus:"Conteúdo difícil / trabalhos / avaliações", objective:"Aproveitar melhor horário mental" },
+      { key:"sun", label:"Domingo", emoji:"🟡", time:"15–20 min", focus:"Planejar semana (prazos, atividades, lives)", objective:"Preparar sem procrastinar" },
+    ],
+    ritual: [
+      { id:"prep", title:"Preparar", detail:"Celular longe • água • computador" },
+      { id:"choose", title:"Escolher", detail:"Abrir plataforma • escolher 1 tarefa" },
+      { id:"pressure", title:"Diminuir a pressão", detail:"Pensar só nos 10 primeiros minutos" },
+      { id:"distract", title:"Eliminar distrações", detail:"Fechar abas • desativar notificações" },
+      { id:"start", title:"Começar", detail:"Play • ler 1º parágrafo • 1ª questão" },
+    ],
+    defaults: {
+      sleepTarget: "23:30"
+    }
+  };
+
+  // -------------------------
+  // Persistência (localStorage)
+  // -------------------------
+  const STORAGE_KEY = "painel_rotina_v1";
+
+  function getState(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return {
+      weekId: getIsoWeekId(new Date()),
+      done: {},          // { sessionKey: boolean }
+      ritualDone: {},    // { ritualId: boolean }
+      sleepTarget: ROUTINE.defaults.sleepTarget
+    };
+    try{
+      const st = JSON.parse(raw);
+      // Se mudou a semana, mantém preferências e reseta progresso semanal
+      const nowWeek = getIsoWeekId(new Date());
+      if(st.weekId !== nowWeek){
+        return {
+          weekId: nowWeek,
+          done: {},
+          ritualDone: {},
+          sleepTarget: st.sleepTarget || ROUTINE.defaults.sleepTarget
+        };
+      }
+      return st;
+    }catch{
+      return {
+        weekId: getIsoWeekId(new Date()),
+        done: {},
+        ritualDone: {},
+        sleepTarget: ROUTINE.defaults.sleepTarget
+      };
+    }
+  }
+  function setState(next){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  }
+
+  // -------------------------
+  // Utils (sem dependências)
+  // -------------------------
+  function toast(msg){
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.style.display = "block";
+    clearTimeout(toast._t);
+    toast._t = setTimeout(()=> el.style.display="none", 2300);
+  }
+
+  function pad(n){ return String(n).padStart(2,"0"); }
+
+  // ISO week id "YYYY-Www"
+  function getIsoWeekId(d){
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+    const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1)/7);
+    return `${date.getUTCFullYear()}-W${pad(weekNo)}`;
+  }
+
+  function getWeekRangeLabel(d){
+    // Monday..Sunday range label (local)
+    const date = new Date(d);
+    const day = date.getDay(); // 0..6 (Sun..Sat)
+    const diffToMon = (day === 0 ? -6 : 1 - day);
+    const mon = new Date(date); mon.setDate(date.getDate() + diffToMon);
+    const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+    const fmt = x => `${pad(x.getDate())}/${pad(x.getMonth()+1)}`;
+    return `${fmt(mon)}–${fmt(sun)}`;
+  }
+
+  function todayKey(){
+    const d = new Date();
+    const day = d.getDay(); // 0 Sun .. 6 Sat
+    return ["sun","mon","tue","wed","thu","fri","sat"][day];
+  }
+
+  function isTrackableSession(s){
+    // conta como "sessão" qualquer item sem type blocked/rest (inclui domingo, sábado)
+    return !s.type;
+  }
+
+  function statusDotFor(s, state){
+    if(s.type === "blocked") return "warn";
+    if(s.type === "rest") return "warn";
+    const done = !!state.done[s.key];
+    if(done) return "ok";
+    // heurística: se for hoje e ainda não marcado, warn; se passou do dia, bad
+    const tKey = todayKey();
+    const order = ["mon","tue","wed","thu","fri","sat","sun"];
+    const idx = order.indexOf(s.key);
+    const tidx = order.indexOf(tKey);
+    if(idx < tidx) return "bad";
+    if(idx === tidx) return "warn";
+    return "";
+  }
+
+  // -------------------------
+  // Render
+  // -------------------------
+  function render(){
+    const state = getState();
+
+    // header pills
+    const pills = document.getElementById("pillRow");
+    pills.innerHTML = "";
+    const now = new Date();
+    const p1 = pill(`Semana`, `<b>${state.weekId}</b>`);
+    const p2 = pill(`Período`, `<b>${getWeekRangeLabel(now)}</b>`);
+    const p3 = pill(`Hoje`, `<b>${labelForKey(todayKey())}</b>`);
+    const p4 = pill(`Regra`, `<b>sono &gt; culpa</b>`);
+    [p1,p2,p3,p4].forEach(x => pills.appendChild(x));
+
+    // week label
+    document.getElementById("weekLabel").textContent = getWeekRangeLabel(now);
+
+    // sleep
+    document.getElementById("sleepTarget").textContent = state.sleepTarget || ROUTINE.defaults.sleepTarget;
+    const sleepInput = document.getElementById("sleepInput");
+    sleepInput.value = state.sleepTarget || ROUTINE.defaults.sleepTarget;
+
+    // KPI counts
+    const trackable = ROUTINE.weeklySessions.filter(isTrackableSession);
+    const total = trackable.length;
+    const done = trackable.reduce((acc,s)=> acc + (state.done[s.key] ? 1 : 0), 0);
+
+    document.getElementById("doneCount").textContent = done;
+    document.getElementById("totalCount").textContent = total;
+
+    const pct = total ? Math.round((done/total)*100) : 0;
+    document.getElementById("progressBar").style.width = pct + "%";
+
+    const hint = document.getElementById("progressHint");
+    if(pct === 100) hint.innerHTML = `Semana completa. <b>Descansar também faz parte do plano.</b>`;
+    else if(pct >= 60) hint.innerHTML = `Você está mantendo o ritmo. Próximo passo: <b>marcar hoje</b>.`;
+    else hint.innerHTML = `Baixa fricção: <b>10 min</b> já contam como começo.`;
+
+    // schedule
+    const list = document.getElementById("scheduleList");
+    list.innerHTML = "";
+    ROUTINE.weeklySessions.forEach(s => {
+      const done = !!state.done[s.key];
+      const dot = statusDotFor(s, state);
+      list.appendChild(scheduleItem(s, done, dot, (nextDone)=>{
+        const st = getState();
+        st.done[s.key] = nextDone;
+        setState(st);
+        render();
+      }));
+    });
+
+    // ritual
+    const rList = document.getElementById("ritualList");
+    rList.innerHTML = "";
+    ROUTINE.ritual.forEach(r=>{
+      const done = !!state.ritualDone[r.id];
+      rList.appendChild(ritualItem(r, done, (nextDone)=>{
+        const st = getState();
+        st.ritualDone[r.id] = nextDone;
+        setState(st);
+        render();
+      }));
+    });
+  }
+
+  function pill(k, vHtml){
+    const el = document.createElement("div");
+    el.className = "pill";
+    el.innerHTML = `<span>${k}:</span> <span>${vHtml}</span>`;
+    return el;
+  }
+
+  function labelForKey(k){
+    const found = ROUTINE.weeklySessions.find(x=>x.key===k);
+    return found ? found.label : k;
+  }
+
+  function scheduleItem(s, done, dot, onToggle){
+    const el = document.createElement("div");
+    el.className = "item";
+
+    const dotClass = dot ? `dot ${dot}` : "dot";
+    const right = document.createElement("div");
+    right.className = "right";
+
+    const checkbox = document.createElement("div");
+    checkbox.className = "check";
+    checkbox.dataset.done = String(!!done);
+    checkbox.title = "Marcar/desmarcar";
+    checkbox.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M20 6L9 17l-5-5" stroke="rgba(34,197,94,1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+
+    // Para dias bloqueados/descanso, ainda permite marcar se você quiser (flexível)
+    checkbox.addEventListener("click", ()=>{
+      onToggle(!done);
+      toast(!done ? `${s.label} marcado.` : `${s.label} desmarcado.`);
+    });
+
+    right.appendChild(checkbox);
+
+    el.innerHTML = `
+      <div class="left">
+        <div class="${dotClass}"></div>
+        <div>
+          <h3>${s.emoji} ${s.label} <span class="muted">• ${s.time}</span></h3>
+          <p><b>Foco:</b> ${escapeHtml(s.focus)}<br><b>Objetivo:</b> ${escapeHtml(s.objective)}</p>
+        </div>
+      </div>
+    `;
+    el.appendChild(right);
+    return el;
+  }
+
+  function ritualItem(r, done, onToggle){
+    const el = document.createElement("div");
+    el.className = "item";
+    const dot = done ? "dot ok" : "dot";
+    const right = document.createElement("div");
+    right.className = "right";
+
+    const checkbox = document.createElement("div");
+    checkbox.className = "check";
+    checkbox.dataset.done = String(!!done);
+    checkbox.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M20 6L9 17l-5-5" stroke="rgba(34,197,94,1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+    checkbox.addEventListener("click", ()=>{
+      onToggle(!done);
+      toast(!done ? `${r.title} ok.` : `${r.title} desmarcado.`);
+    });
+
+    right.appendChild(checkbox);
+
+    el.innerHTML = `
+      <div class="left">
+        <div class="${dot}"></div>
+        <div>
+          <h3>${r.title}</h3>
+          <p>${escapeHtml(r.detail)}</p>
+        </div>
+      </div>
+    `;
+    el.appendChild(right);
+    return el;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  // -------------------------
+  // Ações
+  // -------------------------
+  document.getElementById("btnToday").addEventListener("click", ()=>{
+    const st = getState();
+    const k = todayKey();
+    st.done[k] = true;
+    setState(st);
+    render();
+    toast("Hoje marcado. Só precisa começar.");
+  });
+
+  document.getElementById("btnResetWeek").addEventListener("click", ()=>{
+    if(!confirm("Zerar o progresso da semana atual?")) return;
+    const st = getState();
+    st.done = {};
+    st.ritualDone = {};
+    setState(st);
+    render();
+    toast("Semana zerada.");
+  });
+
+  document.getElementById("saveSleep").addEventListener("click", ()=>{
+    const st = getState();
+    const v = document.getElementById("sleepInput").value || ROUTINE.defaults.sleepTarget;
+    st.sleepTarget = v;
+    setState(st);
+    render();
+    toast("Horário de sono salvo.");
+  });
+
+  // Export/Import (JSON)
+  document.getElementById("btnExport").addEventListener("click", ()=>{
+    const st = getState();
+    const blob = new Blob([JSON.stringify(st, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `painel-rotina-${st.weekId}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Exportado.");
+  });
+
+  document.getElementById("btnImport").addEventListener("click", async ()=>{
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if(!file) return;
+      const text = await file.text();
+      try{
+        const st = JSON.parse(text);
+        if(!st || typeof st !== "object") throw new Error("inválido");
+        // Importa no storage atual, mas aplica a semana corrente
+        const nowWeek = getIsoWeekId(new Date());
+        st.weekId = nowWeek;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
+        render();
+        toast("Importado.");
+      }catch(e){
+        alert("Não consegui importar esse arquivo JSON.");
+      }
+    };
+    input.click();
+  });
+
+  // -------------------------
+  // Timer (ritual 5 min)
+  // -------------------------
+  let timerSeconds = 5*60;
+  let timerHandle = null;
+
+  function renderTimer(){
+    const m = Math.floor(timerSeconds/60);
+    const s = timerSeconds%60;
+    document.getElementById("timerLabel").textContent = `${pad(m)}:${pad(s)}`;
+  }
+  function timerStart(){
+    if(timerHandle) return;
+    timerHandle = setInterval(()=>{
+      timerSeconds = Math.max(0, timerSeconds-1);
+      renderTimer();
+      if(timerSeconds === 0){
+        timerPause();
+        toast("Timer finalizado — escolha 1 tarefa e comece.");
+      }
+    }, 1000);
+  }
+  function timerPause(){
+    if(timerHandle){
+      clearInterval(timerHandle);
+      timerHandle = null;
+    }
+  }
+  function timerReset(){
+    timerPause();
+    timerSeconds = 5*60;
+    renderTimer();
+  }
+
+  document.getElementById("timerStart").addEventListener("click", timerStart);
+  document.getElementById("timerPause").addEventListener("click", timerPause);
+  document.getElementById("timerReset").addEventListener("click", timerReset);
+
+  // init
+  renderTimer();
+  render();
+</script>
+</body>
+</html>
